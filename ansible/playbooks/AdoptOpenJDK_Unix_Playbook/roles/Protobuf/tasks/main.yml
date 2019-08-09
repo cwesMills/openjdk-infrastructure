@@ -13,7 +13,7 @@
     path: /usr/local/bin/protoc
   when:
     - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu" or ansible_distribution == "SLES")
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == "x86_64" or ansible_architecture == "s390x"
   register: protobuf_status
   tags: protobuf
 
@@ -26,7 +26,7 @@
     validate_certs: no
   when:
     - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu" or ansible_distribution == "SLES")
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == "x86_64" or ansible_architecture == "s390x"
     - protobuf_status.stat.exists == False
   tags: protobuf
 
@@ -37,7 +37,7 @@
     copy: False
   when:
     - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu" or ansible_distribution == "SLES")
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == "x86_64" or ansible_architecture == "s390x"
     - protobuf_status.stat.exists == False
   tags: protobuf
 
@@ -45,7 +45,7 @@
   command: ldconfig -p | grep /usr/local/lib
   when:
     - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu" or ansible_distribution == "SLES")
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == "x86_64" or ansible_architecture == "s390x"
     - protobuf_status.stat.exists == False
   register: linker_search_path
   ignore_errors: True
@@ -58,16 +58,16 @@
     create: yes
   when:
     - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu" or ansible_distribution == "SLES")
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == "x86_64" or ansible_architecture == "s390x"
     - protobuf_status.stat.exists == False
     - linker_search_path.stdout == ''
   tags: protobuf
 
 - name: Build and install Protocol Buffers v3.5.1
-  shell: cd /tmp/protobuf-3.5.1 && ./configure CFLAGS=-fPIC CXXFLAGS=-fPIC && make && make install && ldconfig
+  shell: cd /tmp/protobuf-3.5.1 && ./configure --disable-shared --with-pic && make && make install && ldconfig
   when:
     - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu" or ansible_distribution == "SLES")
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == "x86_64" or ansible_architecture == "s390x"
     - protobuf_status.stat.exists == False
   tags: protobuf
 
@@ -81,6 +81,6 @@
   ignore_errors: yes
   when:
     - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "Ubuntu" or ansible_distribution == "SLES")
-    - ansible_architecture == "x86_64"
+    - ansible_architecture == "x86_64" or ansible_architecture == "s390x"
     - protobuf_status.stat.exists == False
   tags: protobuf
